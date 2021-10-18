@@ -1,0 +1,10 @@
+body{
+    margin: 0;
+    padding: 0;
+}
+.score{
+    position: absolute;
+    padding: 10px;
+    font-size: 1.5rem;
+    color: white;
+}

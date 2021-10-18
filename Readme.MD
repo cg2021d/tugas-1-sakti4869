@@ -1,4 +1,6 @@
 # Tugas 1 
+## Muhammad Haikal Aria Sakti
+## 05111940000088
 ### Nama Benda : Ikat Pinggang
 ##  Tampilan Depan Atas ##
 [![36036.jpg](https://i.postimg.cc/rw9d6Ms9/36036.jpg)](https://postimg.cc/MnvZVkyc)

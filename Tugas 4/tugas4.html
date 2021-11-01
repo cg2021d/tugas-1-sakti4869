@@ -1,0 +1,136 @@
+
+<html>
+    <head>
+        <title>Panoramic View</title>
+        
+        <script src = "js/three.min.js"></script>    
+        <script src = "js/controls/OrbitControls.js"></script>     
+    </head>
+    <body>
+    </body> 
+</html>
+
+<script>   
+    let scene, camera, renderer, sphere, target, texture;
+    const LEFT = 37, RIGHT = 39, UP = 38, DOWN = 40; 
+    let ADD = 0.005, theta = 0;
+    
+    let createGeometry = function() {
+        texture = new THREE.TextureLoader().load( 'images/pano.jpg');
+        let material =  new THREE.MeshBasicMaterial({map: texture, side: THREE.DoubleSide});
+        let geometry = new THREE.SphereGeometry(5, 100, 100);
+        sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere); 
+    };
+    
+    let createCube = function() {
+        // textureEquirec = texture;
+        // textureEquirec.mapping = THREE.EquirectangularReflectionMapping;
+        // textureEquirec.encoding = THREE.sRGBEncoding;
+
+        // const refGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+        // const refMaterial = new THREE.MeshBasicMaterial({
+        //     envMap: textureEquirec,
+        // });
+        // reflective = new THREE.Mesh(refGeometry, refMaterial);
+        // reflective.position.set(-3, 0, 0);
+        // scene.add(reflective);
+        const geometry = new THREE.BoxGeometry( 0.5, 0.5, 0.5 );
+        const material = new THREE.MeshPhysicalMaterial( {color: 0xffffff} );
+        cube = new THREE.Mesh( geometry, material );
+        cube.castShadow = true;
+        scene.add( cube );
+        const light = new THREE.PointLight(0xffffff);
+        light.position.set(-2,3,1);
+        light.castShadow = true;
+        light.shadow.mapSize.width = 512; // default
+        light.shadow.mapSize.height = 512; // default
+        light.shadow.camera.near = 0.5; // default
+        light.shadow.camera.far = 500; // default
+        scene.add(light);
+        const sphereSize = 1;
+        const pointLightHelper = new THREE.PointLightHelper( light, sphereSize );
+        scene.add( pointLightHelper );
+    };
+
+
+    let createPlane = function() {
+        texture = new THREE.TextureLoader().load( 'images/marble.jpg');
+        const geometry = new THREE.PlaneGeometry( 4, 4 );
+        const material = new THREE.MeshPhysicalMaterial( {map : texture, side: THREE.DoubleSide} );
+        plane = new THREE.Mesh( geometry, material );
+        plane.receiveShadow = true;
+        scene.add( plane );
+    };
+
+    let createFog = function(){
+        const near = 4;
+        const far = 8;
+        const color = 'lightblue';
+        scene.fog = new THREE.Fog(color, near, far);
+    }
+
+    let onKeyDown = function(e) {
+        if(e.keyCode == LEFT) 
+            scene.position.x -=0.1;
+        else if(e.keyCode == RIGHT)
+            scene.position.x +=0.1;
+        else if(e.keyCode == UP)
+            scene.position.z -=0.1;
+        else if(e.keyCode == DOWN)
+            scene.position.z +=0.1;
+    }
+
+    // set up the environment - 
+    // initiallize scene, camera, objects and renderer
+    let init = function() {
+        // create the scene
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xffffff);
+        
+        // create an locate the camera
+        camera = new THREE.PerspectiveCamera(70, 
+                        window.innerWidth / window.innerHeight, 
+                        1, 1000);
+        camera.position.set(4, 0, 0);
+        createGeometry();
+        createCube();
+        cube.position.x == -2;
+        cube.position.z == -2;
+        createPlane();
+        plane.rotation.x = Math.PI / 2;
+        plane.position.y = -0.5;
+        createFog();
+        // create the renderer   
+        renderer = new THREE.WebGLRenderer({antialiasing: true});   
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        
+        // controls
+        controls = new THREE.OrbitControls( camera, renderer.domElement );
+        //controls.listenToKeyEvents( window ); // optional
+        //controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
+        controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+        controls.dampingFactor = 0.05;
+        //controls.autoRotate = true;
+        controls.screenSpacePanning = false;
+        document.addEventListener("keydown", onKeyDown, false);
+    };
+   
+    // main animation loop - calls 50-60 times per second.
+    let mainLoop = function() {
+        renderer.render(scene, camera);
+        controls.update();
+        requestAnimationFrame(mainLoop);
+        cube.rotation.x +=0.1;
+    };
+    
+    ///////////////////////////////////////////////
+    init();
+    mainLoop();
+</script>
+
+
+       
